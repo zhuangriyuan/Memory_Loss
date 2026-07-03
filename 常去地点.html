@@ -1,0 +1,1107 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="常去地点">
+<meta name="theme-color" content="#0B0B0E">
+<title>常去地点</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont/dist/tabler-icons.min.css">
+<style>
+  :root{
+    --bg:#0B0B0E;
+    --surface:#17171B;
+    --surface-2:#1E1E23;
+    --border:rgba(255,255,255,0.08);
+    --border-strong:rgba(255,255,255,0.16);
+    --text:#F2F2F0;
+    --text-soft:#9A9AA2;
+    --text-faint:#5F5F68;
+    --teal:#35C9A5;
+    --teal-deep:#1F8E71;
+    --danger:#FF6B5B;
+    --accent-bg:rgba(53,201,165,0.14);
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;padding:0;background:var(--bg);color:var(--text);
+    font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Helvetica Neue",sans-serif;
+    -webkit-font-smoothing:antialiased;}
+  body{padding-bottom:calc(84px + env(safe-area-inset-bottom));min-height:100vh;}
+  button{font-family:inherit;}
+  input{font-family:inherit;}
+
+  .shell{max-width:480px;margin:0 auto;}
+
+  header{
+    padding:26px 18px 14px;
+    display:flex;align-items:flex-start;justify-content:space-between;
+  }
+  header .titles h1{
+    margin:0 0 4px;font-size:24px;font-weight:600;letter-spacing:0.2px;
+  }
+  header .titles p{margin:0;font-size:12.5px;color:var(--text-soft);}
+  .icon-btn{
+    width:36px;height:36px;border-radius:50%;
+    background:var(--surface);border:1px solid var(--border);
+    color:var(--text-soft);font-size:17px;
+    display:flex;align-items:center;justify-content:center;
+    flex-shrink:0;
+  }
+  .icon-btn:active{background:var(--surface-2);}
+
+  .cloud-badge{
+    display:inline-flex;align-items:center;gap:5px;
+    font-size:11px;color:var(--text-soft);
+    margin-top:6px;padding:3px 9px 3px 7px;
+    border-radius:20px;background:var(--surface);border:1px solid var(--border);
+  }
+  .cloud-badge.on{color:var(--teal);}
+  .cloud-badge i{font-size:12px;}
+
+  main{padding:0 18px 8px;}
+
+  .stat-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:18px;}
+  .stat-card{
+    background:var(--surface);border:1px solid var(--border);
+    border-radius:14px;padding:14px 16px;
+  }
+  .stat-card .label{font-size:12px;color:var(--text-soft);margin:0 0 6px;}
+  .stat-card .num{font-size:22px;font-weight:600;margin:0;}
+  .stat-card .num span{font-size:13px;font-weight:400;color:var(--text-soft);margin-left:3px;}
+
+  .segmented{
+    display:flex;background:var(--surface);border:1px solid var(--border);
+    border-radius:11px;padding:3px;margin-bottom:16px;
+  }
+  .segmented button{
+    flex:1;border:none;background:transparent;color:var(--text-soft);
+    padding:8px 0;border-radius:8px;font-size:13.5px;font-weight:500;
+  }
+  .segmented button.active{background:var(--surface-2);color:var(--text);}
+
+  .search-wrap{margin-bottom:14px;}
+  .search-wrap input{
+    width:100%;padding:10px 14px;border-radius:10px;
+    border:1px solid var(--border);background:var(--surface);
+    color:var(--text);font-size:15px;
+  }
+  .search-wrap input::placeholder{color:var(--text-faint);}
+  .search-wrap input:focus{outline:none;border-color:var(--teal);}
+
+  .empty{text-align:center;padding:60px 20px;color:var(--text-soft);}
+  .empty .glyph{font-size:30px;margin-bottom:10px;color:var(--text-faint);}
+  .empty p{margin:4px 0;font-size:14px;line-height:1.6;}
+
+  .cat-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+  .cat-tile{
+    background:var(--surface);border:1px solid var(--border);
+    border-radius:14px;padding:14px;text-align:left;
+    display:flex;flex-direction:column;gap:10px;
+    touch-action:none;-webkit-user-select:none;user-select:none;
+    position:relative;
+  }
+  .cat-tile:active{background:var(--surface-2);}
+  .cat-tile.jiggle{animation:tileJiggle 0.26s ease-in-out infinite;}
+  @keyframes tileJiggle{0%{transform:rotate(-1deg);}50%{transform:rotate(1deg);}100%{transform:rotate(-1deg);}}
+  .cat-tile.tile-dragging{animation:none;opacity:0.96;box-shadow:0 14px 32px rgba(0,0,0,0.45);transform:scale(1.04);}
+  .drag-handle{position:absolute;top:8px;right:8px;color:var(--text-faint);font-size:14px;}
+  .reorder-bar{
+    display:flex;align-items:center;justify-content:space-between;gap:10px;
+    background:var(--accent-bg);border:1px solid var(--teal);border-radius:10px;
+    padding:9px 12px;margin-bottom:12px;font-size:12px;color:var(--teal);
+  }
+  .reorder-bar button{border:none;background:var(--teal);color:#06231B;font-size:12.5px;font-weight:600;padding:6px 14px;border-radius:20px;flex-shrink:0;}
+  .cat-tile .avatar{
+    width:38px;height:38px;border-radius:11px;
+    display:flex;align-items:center;justify-content:center;font-size:18px;
+  }
+  .cat-tile .cname{font-size:15px;font-weight:600;margin:0;}
+  .cat-tile .ccount{font-size:12px;color:var(--text-soft);margin:0;}
+  .cat-tile.add-tile{
+    align-items:center;justify-content:center;flex-direction:row;gap:8px;
+    color:var(--text-soft);border-style:dashed;min-height:76px;
+  }
+
+  .group{margin-bottom:20px;}
+  .group-head{display:flex;align-items:center;gap:8px;margin:0 0 10px 2px;}
+  .group-head .dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+  .group-head h2{margin:0;font-size:13px;font-weight:600;color:var(--text-soft);letter-spacing:0.4px;}
+  .group-head .count{font-size:11.5px;color:var(--text-faint);}
+
+  .card{
+    background:var(--surface);border:1px solid var(--border);
+    border-radius:12px;padding:13px 14px;margin-bottom:9px;position:relative;
+  }
+  .card .name{font-size:15.5px;font-weight:600;margin:0 0 4px;padding-right:52px;}
+  .card .addr{
+    display:flex;align-items:center;gap:6px;font-size:13px;color:var(--teal);
+    line-height:1.5;
+  }
+  .card .addr:active{opacity:0.6;}
+  .card .addr i{flex-shrink:0;font-size:14px;}
+  .card .no-addr{font-size:12.5px;color:var(--text-faint);}
+  .card .tag{
+    display:inline-block;font-size:10.5px;padding:2px 8px;border-radius:20px;
+    margin-bottom:6px;
+  }
+  .card .actions{position:absolute;top:12px;right:10px;display:flex;gap:2px;}
+  .card .actions button{
+    border:none;background:transparent;color:var(--text-faint);font-size:15px;padding:4px 6px;
+  }
+  .card .actions button:active{color:var(--danger);}
+
+  .list-group{margin-bottom:18px;}
+  .list-group-title{font-size:12.5px;font-weight:600;color:var(--text-soft);margin:0 0 8px 2px;}
+  .list-rows{background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden;}
+  .list-row{display:flex;flex-direction:column;border-top:1px solid var(--border);}
+  .list-row:first-child{border-top:none;}
+  .row-top{display:flex;align-items:center;}
+  .row-main{
+    flex:1;display:flex;align-items:baseline;gap:6px;padding:12px;
+    background:none;border:none;color:var(--text);text-align:left;overflow:hidden;min-width:0;
+  }
+  .row-main::before{content:'\2022';color:var(--teal);font-weight:700;flex-shrink:0;}
+  .row-name{font-size:14.5px;font-weight:500;flex-shrink:0;}
+  .row-addr{font-size:12.5px;color:var(--text-soft);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0;}
+  .row-addr.row-empty{color:var(--text-faint);font-style:normal;}
+  .row-note{font-size:11.5px;color:var(--text-faint);padding:0 12px 10px 26px;margin-top:-4px;line-height:1.5;}
+  .row-actions{display:flex;gap:2px;padding-right:8px;flex-shrink:0;}
+  .row-actions button{border:none;background:transparent;color:var(--text-faint);font-size:14px;padding:6px;}
+  .row-actions button:active{color:var(--danger);}
+
+  .cat-manage-row{
+    display:flex;align-items:center;gap:8px;padding:11px 12px;
+    background:var(--surface);border:1px solid var(--border);border-radius:10px;margin-bottom:8px;
+  }
+  .cat-manage-row .cdot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+  .cat-manage-name{flex:1;font-size:14.5px;}
+  .cat-manage-row button{border:none;background:transparent;color:var(--text-faint);font-size:15px;padding:4px 6px;}
+  .cat-manage-row button:active{color:var(--danger);}
+  .cat-add-btn{
+    width:100%;padding:11px;border-radius:10px;border:1px dashed var(--border-strong);
+    background:transparent;color:var(--teal);font-size:14px;font-weight:500;
+  }
+
+  .tabbar{
+    position:fixed;left:0;right:0;bottom:0;
+    background:rgba(23,23,27,0.92);backdrop-filter:blur(16px);
+    border-top:1px solid var(--border);
+    padding:10px 0 calc(8px + env(safe-area-inset-bottom));
+    display:flex;justify-content:center;gap:0;z-index:15;
+  }
+  .tabbar-inner{display:flex;max-width:480px;width:100%;}
+  .tab-btn{
+    flex:1;border:none;background:transparent;color:var(--text-faint);
+    display:flex;flex-direction:column;align-items:center;gap:3px;
+    font-size:10.5px;padding:2px 0;
+  }
+  .tab-btn i{font-size:21px;}
+  .tab-btn.active{color:var(--teal);}
+
+  .fab{
+    position:fixed;right:18px;bottom:calc(78px + env(safe-area-inset-bottom));
+    width:54px;height:54px;border-radius:50%;
+    background:var(--teal);color:#06231B;border:none;font-size:24px;
+    display:flex;align-items:center;justify-content:center;
+    box-shadow:0 8px 20px rgba(53,201,165,0.35);z-index:14;
+  }
+  .fab:active{background:var(--teal-deep);}
+
+  .sheet-backdrop{position:fixed;inset:0;background:rgba(0,0,0,0.55);display:none;z-index:20;}
+  .sheet-backdrop.open{display:block;}
+  .sheet{
+    position:fixed;left:0;right:0;bottom:0;background:var(--bg);
+    border-top:1px solid var(--border-strong);
+    border-radius:18px 18px 0 0;padding:16px 18px calc(22px + env(safe-area-inset-bottom));
+    transform:translateY(100%);transition:transform 0.25s ease;z-index:21;
+    max-height:86vh;overflow-y:auto;
+  }
+  .sheet.open{transform:translateY(0);}
+  .sheet-handle{width:36px;height:4px;border-radius:2px;background:var(--border-strong);margin:0 auto 14px;}
+  .sheet h3{margin:0 0 14px;font-size:16.5px;font-weight:600;}
+  .sheet p.desc{font-size:13px;color:var(--text-soft);margin:-6px 0 16px;line-height:1.6;}
+
+  .modal-center{
+    position:fixed;left:50%;top:50%;
+    transform:translate(-50%,-50%) scale(0.94);opacity:0;pointer-events:none;
+    background:var(--bg);border:1px solid var(--border-strong);
+    border-radius:18px;padding:18px 18px calc(18px + env(safe-area-inset-bottom));
+    width:calc(100% - 48px);max-width:400px;max-height:78vh;overflow-y:auto;
+    transition:transform .18s ease, opacity .18s ease;z-index:21;
+  }
+  .modal-center.open{transform:translate(-50%,-50%) scale(1);opacity:1;pointer-events:auto;}
+  .modal-center .sheet-handle{display:none;}
+  .modal-center h3{margin:0 0 14px;font-size:16.5px;font-weight:600;}
+
+  .field textarea{
+    width:100%;padding:11px 12px;border:1px solid var(--border);border-radius:9px;
+    background:var(--surface);color:var(--text);font-size:15px;font-family:inherit;
+    resize:vertical;min-height:64px;
+  }
+  .field textarea::placeholder{color:var(--text-faint);}
+  .field textarea:focus{outline:none;border-color:var(--teal);}
+
+  .field{margin-bottom:14px;}
+  .field label{display:block;font-size:12px;color:var(--text-soft);margin-bottom:6px;font-weight:600;}
+  .field input{
+    width:100%;padding:11px 12px;border:1px solid var(--border);border-radius:9px;
+    background:var(--surface);color:var(--text);font-size:15.5px;
+  }
+  .field input::placeholder{color:var(--text-faint);}
+  .field input:focus{outline:none;border-color:var(--teal);}
+
+  .cat-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px;}
+  .cat-chip{
+    display:flex;align-items:center;gap:6px;
+    padding:7px 13px;border-radius:20px;border:1px solid var(--border);
+    font-size:13px;color:var(--text-soft);background:var(--surface);
+  }
+  .cat-chip .cdot{width:7px;height:7px;border-radius:50%;}
+  .cat-chip.active{border-color:var(--teal);color:var(--text);background:var(--accent-bg);}
+  .cat-chip.add-new{color:var(--teal);border-style:dashed;}
+  .new-cat-input{margin-top:8px;display:none;}
+  .new-cat-input.show{display:block;}
+
+  .sheet-actions{display:flex;gap:10px;margin-top:18px;}
+  .sheet-actions button{flex:1;padding:13px;border-radius:10px;font-size:15px;font-weight:600;border:none;}
+  .btn-cancel{background:var(--surface);color:var(--text-soft);border:1px solid var(--border) !important;}
+  .btn-save{background:var(--teal);color:#06231B;}
+  .btn-danger{background:rgba(255,107,91,0.14);color:var(--danger);}
+
+  .nav-choice{display:flex;flex-direction:column;gap:9px;margin-top:2px;}
+  .nav-choice label{
+    display:flex;align-items:center;gap:10px;padding:12px 14px;
+    border:1px solid var(--border);border-radius:10px;font-size:14.5px;background:var(--surface);
+  }
+  .nav-choice label.checked{border-color:var(--teal);background:var(--accent-bg);}
+  .nav-choice input{accent-color:var(--teal);width:18px;height:18px;}
+  .settings-block{margin-bottom:22px;}
+  .settings-block h4{font-size:12px;color:var(--text-soft);margin:0 0 10px;text-transform:uppercase;letter-spacing:0.4px;}
+  .account-row{
+    display:flex;align-items:center;justify-content:space-between;
+    padding:13px 14px;background:var(--surface);border:1px solid var(--border);border-radius:10px;
+  }
+  .account-row .email{font-size:14px;}
+  .account-row .sub{font-size:11.5px;color:var(--text-soft);margin-top:2px;}
+  .link-btn{background:none;border:none;color:var(--danger);font-size:13.5px;}
+
+  .login-wrap{padding:80px 24px 24px;max-width:400px;margin:0 auto;}
+  .login-wrap h2{font-size:21px;margin:0 0 8px;}
+  .login-wrap p{font-size:13.5px;color:var(--text-soft);line-height:1.7;margin:0 0 22px;}
+  .login-wrap .field input{padding:13px;}
+  .login-wrap button{
+    width:100%;padding:13px;border-radius:10px;border:none;
+    background:var(--teal);color:#06231B;font-size:15px;font-weight:600;margin-top:6px;
+  }
+  .login-hint{font-size:12px;color:var(--text-faint);margin-top:14px;line-height:1.6;}
+</style>
+</head>
+<body>
+
+<div id="app"></div>
+
+<div class="sheet-backdrop" id="backdrop"></div>
+<div class="sheet" id="sheet">
+  <div class="sheet-handle"></div>
+  <h3 id="sheetTitle">添加地点</h3>
+  <div class="field">
+    <label>名称</label>
+    <input type="text" id="fName" placeholder="比如：楼下那家川菜馆">
+  </div>
+  <div class="field">
+    <label>分类</label>
+    <div class="cat-row" id="catRow"></div>
+    <div class="new-cat-input" id="newCatWrap">
+      <input type="text" id="fNewCat" placeholder="新分类名称，比如：咖啡馆">
+    </div>
+  </div>
+  <div class="field">
+    <label>地址</label>
+    <input type="text" id="fAddr" placeholder="尽量写详细一点，方便导航">
+  </div>
+  <div class="field">
+    <label>备注</label>
+    <textarea id="fNote" placeholder="比如：周三休息 / 停车要绕到后门"></textarea>
+  </div>
+  <div class="sheet-actions">
+    <button class="btn-cancel" id="btnCancel">取消</button>
+    <button class="btn-save" id="btnSave">保存</button>
+  </div>
+</div>
+
+<div class="sheet-backdrop" id="catBackdrop"></div>
+<div class="modal-center" id="catSheet">
+  <div class="sheet-handle"></div>
+  <h3 id="catSheetTitle">分类</h3>
+  <button class="btn-save" id="btnAddToCat" style="width:100%;padding:12px;border-radius:10px;border:none;font-size:14.5px;font-weight:600;margin-bottom:14px;">+ 添加地点到这里</button>
+  <div id="catSheetList"></div>
+  <div class="sheet-actions">
+    <button class="btn-danger" id="btnDeleteCat">删除这个分类</button>
+    <button class="btn-cancel" id="btnCatClose">关闭</button>
+  </div>
+</div>
+
+<div class="sheet-backdrop" id="settingsBackdrop"></div>
+<div class="sheet" id="settingsSheet">
+  <div class="sheet-handle"></div>
+  <h3>设置</h3>
+
+  <div class="settings-block" id="accountBlock">
+    <h4>账户与同步</h4>
+    <div id="accountContent"></div>
+  </div>
+
+  <div class="settings-block">
+    <h4>分类管理</h4>
+    <div id="catManageList"></div>
+    <button class="cat-add-btn" id="btnAddCatSettings">+ 新建分类</button>
+  </div>
+
+  <div class="settings-block">
+    <h4>点地址时跳转到</h4>
+    <div class="nav-choice" id="navChoice">
+      <label data-app="apple"><input type="radio" name="navapp" value="apple">苹果地图（开车路线，一步到位）</label>
+      <label data-app="google"><input type="radio" name="navapp" value="google">谷歌地图（开车路线，一步到位）</label>
+      <label data-app="amap"><input type="radio" name="navapp" value="amap">高德地图（需再点一次"导航"）</label>
+    </div>
+  </div>
+
+  <div class="sheet-actions">
+    <button class="btn-cancel" id="btnSettingsClose">完成</button>
+  </div>
+</div>
+
+<script type="module">
+import { init, id } from "https://esm.sh/@instantdb/core";
+
+/* ============ 在这里填入你的 InstantDB App ID ============
+   去 https://instantdb.com/dash 免费注册后创建一个 App 即可拿到
+   不填的话，App 会自动用"仅本机存储"模式运行
+*/
+const INSTANT_APP_ID = "35bb7cc3-5ccf-4d3e-b2a9-31511cc34c75";
+
+const CLOUD_MODE = INSTANT_APP_ID && INSTANT_APP_ID !== "__APP_ID__" && INSTANT_APP_ID.length > 8;
+
+const CAT_COLORS = [
+  {bg:'rgba(53,201,165,0.16)', fg:'#35C9A5'},
+  {bg:'rgba(91,159,239,0.16)', fg:'#5B9FEF'},
+  {bg:'rgba(255,138,101,0.16)', fg:'#FF8A65'},
+  {bg:'rgba(167,139,250,0.16)', fg:'#A78BFA'},
+  {bg:'rgba(244,114,182,0.16)', fg:'#F472B6'},
+  {bg:'rgba(251,191,36,0.16)', fg:'#FBBF24'},
+  {bg:'rgba(74,222,128,0.16)', fg:'#4ADE80'},
+  {bg:'rgba(248,113,113,0.16)', fg:'#F87171'},
+];
+const DEFAULT_CATS = ['超市','餐厅','其他'];
+const LOCAL_KEY = 'places-book-v2';
+const NAV_PREF_KEY = 'nav-app-pref';
+
+let places = [];
+let categories = [];
+let authUser = null;
+let viewMode = localStorage.getItem('view-mode') || 'grid';
+let activeTab = 'home';
+let editingId = null;
+let selectedCatName = null;
+let lockedCatName = null;
+let catSheetName = null;
+let db = null;
+let sentEmail = '';
+let reorderMode = false;
+let dragCatId = null, dragOffsetX = 0, dragOffsetY = 0, dragElRef = null, dragCache = [];
+
+function uid(){ return CLOUD_MODE ? id() : (Date.now().toString(36) + Math.random().toString(36).slice(2,7)); }
+function escapeHtml(s){ return (s||'').replace(/[&<>"']/g, m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
+function escapeAttr(s){ return (s||'').replace(/\\/g,'\\\\').replace(/'/g,"\\'").replace(/"/g,'&quot;'); }
+
+/* ---------------- 数据层 ---------------- */
+function loadLocal(){
+  try{
+    const raw = localStorage.getItem(LOCAL_KEY);
+    if(!raw) return null;
+    return JSON.parse(raw);
+  }catch(e){ return null; }
+}
+function saveLocal(){
+  localStorage.setItem(LOCAL_KEY, JSON.stringify({places, categories}));
+}
+function seedDefaultsIfEmpty(){
+  if(categories.length === 0){
+    DEFAULT_CATS.forEach((name, i)=>{
+      const cat = { id: uid(), name, colorIndex: i % CAT_COLORS.length, order: i, createdAt: Date.now() };
+      if(CLOUD_MODE){
+        db.transact(db.tx.categories[cat.id].update({name:cat.name, colorIndex:cat.colorIndex, order:cat.order, createdAt:cat.createdAt, owner:authUser.id}));
+      } else {
+        categories.push(cat);
+      }
+    });
+    if(!CLOUD_MODE) saveLocal();
+  }
+}
+
+function addCategory(name){
+  const trimmed = name.trim();
+  if(!trimmed) return null;
+  const exists = categories.find(c=>c.name.toLowerCase()===trimmed.toLowerCase());
+  if(exists) return exists;
+  const cat = { id: uid(), name: trimmed, colorIndex: categories.length % CAT_COLORS.length, order: categories.length, createdAt: Date.now() };
+  if(CLOUD_MODE){
+    db.transact(db.tx.categories[cat.id].update({name:cat.name, colorIndex:cat.colorIndex, order:cat.order, createdAt:cat.createdAt, owner:authUser.id}));
+  } else {
+    categories.push(cat);
+    saveLocal();
+    renderAll();
+  }
+  return cat;
+}
+function deleteCategory(catId){
+  const cat = categories.find(c=>c.id===catId);
+  if(!cat) return;
+  const inUse = places.some(p=>p.cat===cat.name);
+  if(inUse){ alert('这个分类里还有地点，先删掉或者改分类再删除它。'); return; }
+  if(CLOUD_MODE){
+    db.transact(db.tx.categories[catId].delete());
+  } else {
+    categories = categories.filter(c=>c.id!==catId);
+    saveLocal(); renderAll();
+  }
+}
+
+function createCategoryFlow(){
+  const input = prompt('新分类名称');
+  if(input === null) return;
+  const trimmed = input.trim();
+  if(!trimmed) return;
+  addCategory(trimmed);
+  renderAll();
+  setTimeout(renderCatManageListSafe, 60);
+}
+window.createCategoryFlow = createCategoryFlow;
+function renderCatManageListSafe(){
+  if(typeof renderCatManageList === 'function') renderCatManageList();
+}
+
+/* ---------------- 方块拖拽排序 ---------------- */
+function bindGridTileEvents(){
+  const grid = document.getElementById('catGrid');
+  if(!grid) return;
+  grid.querySelectorAll('.cat-tile[data-cat-id]').forEach(tile=>{
+    tile.addEventListener('pointerdown', onTilePointerDown);
+  });
+}
+
+function onTilePointerDown(e){
+  if(e.pointerType === 'mouse' && e.button !== 0) return;
+  const tile = e.currentTarget;
+  const catId = tile.getAttribute('data-cat-id');
+  const startX = e.clientX, startY = e.clientY;
+  const startTime = Date.now();
+  let moved = false;
+  let dragging = false;
+  let longPressTimer = null;
+
+  function onMove(ev){
+    const dx = ev.clientX-startX, dy = ev.clientY-startY;
+    if(Math.abs(dx)>10 || Math.abs(dy)>10) moved = true;
+    if(dragging){
+      ev.preventDefault();
+      updateDragTile(ev.clientX, ev.clientY);
+    }
+  }
+  function onUp(){
+    document.removeEventListener('pointermove', onMove);
+    document.removeEventListener('pointerup', onUp);
+    clearTimeout(longPressTimer);
+    if(dragging){
+      endDragTile();
+      return;
+    }
+    if(!moved && Date.now()-startTime < 500 && !reorderMode){
+      const cat = categories.find(c=>c.id===catId);
+      if(cat) openCatSheet(cat.name);
+    }
+  }
+  document.addEventListener('pointermove', onMove, {passive:false});
+  document.addEventListener('pointerup', onUp);
+
+  if(reorderMode){
+    dragging = true;
+    startDragTile(tile, catId, startX, startY);
+  } else {
+    longPressTimer = setTimeout(()=>{
+      if(!moved){
+        reorderMode = true;
+        renderMain();
+        const freshTile = document.querySelector(`.cat-tile[data-cat-id="${catId}"]`);
+        if(freshTile){
+          dragging = true;
+          startDragTile(freshTile, catId, startX, startY);
+        }
+      }
+    }, 480);
+  }
+}
+
+function startDragTile(tile, catId, startX, startY){
+  dragCatId = catId;
+  dragElRef = tile;
+  const rect = tile.getBoundingClientRect();
+  dragOffsetX = startX - rect.left;
+  dragOffsetY = startY - rect.top;
+  tile.style.position = 'fixed';
+  tile.style.left = rect.left+'px';
+  tile.style.top = rect.top+'px';
+  tile.style.width = rect.width+'px';
+  tile.style.height = rect.height+'px';
+  tile.style.zIndex = '60';
+  tile.classList.add('tile-dragging');
+  refreshDragSiblingCache();
+  if(navigator.vibrate) navigator.vibrate(8);
+}
+
+function refreshDragSiblingCache(){
+  const grid = document.getElementById('catGrid');
+  if(!grid) return;
+  dragCache = Array.from(grid.querySelectorAll('.cat-tile[data-cat-id]'))
+    .filter(el=>el.getAttribute('data-cat-id')!==dragCatId)
+    .map(el=>({ catId: el.getAttribute('data-cat-id'), rect: el.getBoundingClientRect() }));
+}
+
+function updateDragTile(clientX, clientY){
+  if(!dragElRef) return;
+  dragElRef.style.left = (clientX-dragOffsetX)+'px';
+  dragElRef.style.top = (clientY-dragOffsetY)+'px';
+  let target = null;
+  for(const item of dragCache){
+    if(clientX>=item.rect.left && clientX<=item.rect.right && clientY>=item.rect.top && clientY<=item.rect.bottom){
+      target = item; break;
+    }
+  }
+  if(target){
+    const fromIdx = categories.findIndex(c=>c.id===dragCatId);
+    const toIdx = categories.findIndex(c=>c.id===target.catId);
+    if(fromIdx!==-1 && toIdx!==-1 && fromIdx!==toIdx){
+      const [moved] = categories.splice(fromIdx,1);
+      categories.splice(toIdx,0,moved);
+      reflowGridOrder();
+      refreshDragSiblingCache();
+    }
+  }
+}
+
+function reflowGridOrder(){
+  const grid = document.getElementById('catGrid');
+  if(!grid) return;
+  categories.forEach(cat=>{
+    const el = grid.querySelector(`.cat-tile[data-cat-id="${cat.id}"]`);
+    if(el) grid.appendChild(el);
+  });
+  const addTile = grid.querySelector('.add-tile');
+  if(addTile) grid.appendChild(addTile);
+}
+
+function endDragTile(){
+  if(!dragElRef) return;
+  dragElRef.style.position = '';
+  dragElRef.style.left = ''; dragElRef.style.top = '';
+  dragElRef.style.width = ''; dragElRef.style.height = ''; dragElRef.style.zIndex = '';
+  dragElRef.classList.remove('tile-dragging');
+  dragElRef = null; dragCatId = null;
+  categories.forEach((c,i)=> c.order = i);
+  if(CLOUD_MODE){
+    const txs = categories.map(c=> db.tx.categories[c.id].update({order:c.order}));
+    if(txs.length) db.transact(txs);
+  } else {
+    saveLocal();
+  }
+}
+
+window.exitReorderMode = function(){
+  reorderMode = false;
+  renderMain();
+};
+function addPlace({name, cat, addr, note}){
+  const p = { id: uid(), name, cat, addr, note: note||'', createdAt: Date.now() };
+  if(CLOUD_MODE){
+    db.transact(db.tx.places[p.id].update({name, cat, addr, note:p.note, createdAt:p.createdAt, owner:authUser.id}));
+  } else {
+    places.push(p); saveLocal(); renderAll();
+  }
+}
+function updatePlace(pid, patch){
+  if(CLOUD_MODE){
+    db.transact(db.tx.places[pid].update(patch));
+  } else {
+    const p = places.find(p=>p.id===pid);
+    if(p) Object.assign(p, patch);
+    saveLocal(); renderAll();
+  }
+}
+function deletePlace(pid){
+  if(CLOUD_MODE){
+    db.transact(db.tx.places[pid].delete());
+  } else {
+    places = places.filter(p=>p.id!==pid);
+    saveLocal(); renderAll();
+  }
+}
+window.deletePlace = deletePlace;
+
+/* ---------------- 导航跳转 ---------------- */
+function getNavPref(){ return localStorage.getItem(NAV_PREF_KEY) || 'apple'; }
+function setNavPref(v){ localStorage.setItem(NAV_PREF_KEY, v); }
+function openNav(name, addr){
+  const target = addr || name;
+  const encoded = encodeURIComponent(target);
+  const pref = getNavPref();
+  if(pref === 'google'){
+    window.open('https://www.google.com/maps/dir/?api=1&destination=' + encoded + '&travelmode=driving', '_blank');
+    return;
+  }
+  if(pref === 'amap'){
+    const fallbackTimer = setTimeout(()=>{ window.location.href = 'https://www.amap.com/search?query=' + encoded; }, 900);
+    window.addEventListener('pagehide', ()=>clearTimeout(fallbackTimer), {once:true});
+    window.addEventListener('blur', ()=>clearTimeout(fallbackTimer), {once:true});
+    window.location.href = 'iosamap://poi?sourceApplication=changquplaces&poiname=' + encoded + '&dev=0';
+    return;
+  }
+  window.open('https://maps.apple.com/?daddr=' + encoded + '&dirflg=d', '_blank');
+}
+window.openNav = openNav;
+
+/* ---------------- 渲染 ---------------- */
+const appEl = document.getElementById('app');
+
+function catColor(catName){
+  const cat = categories.find(c=>c.name===catName);
+  const idx = cat ? cat.colorIndex : 0;
+  return CAT_COLORS[idx % CAT_COLORS.length];
+}
+
+function statCardsHTML(){
+  return `<div class="stat-row">
+    <div class="stat-card"><p class="label">总地点</p><p class="num">${places.length}<span>条</span></p></div>
+    <div class="stat-card"><p class="label">分类数</p><p class="num">${categories.length}<span>个</span></p></div>
+  </div>`;
+}
+
+function rowHTML(p){
+  return `<div class="list-row">
+    <div class="row-top">
+      <button class="row-main" onclick="openNav('${escapeAttr(p.name)}','${escapeAttr(p.addr)}')">
+        <span class="row-name">${escapeHtml(p.name)}</span>
+        <span class="row-addr ${p.addr?'':'row-empty'}">${p.addr ? '- ' + escapeHtml(p.addr) : '未填写地址'}</span>
+      </button>
+      <span class="row-actions">
+        <button onclick="editPlace('${p.id}')" aria-label="编辑"><i class="ti ti-pencil"></i></button>
+        <button onclick="deletePlace('${p.id}')" aria-label="删除"><i class="ti ti-trash"></i></button>
+      </span>
+    </div>
+    ${p.note ? `<div class="row-note"><i class="ti ti-note" style="margin-right:4px;"></i>${escapeHtml(p.note)}</div>` : ''}
+  </div>`;
+}
+
+function renderHome(){
+  if(viewMode === 'grid'){
+    if(categories.length === 0 && !reorderMode){
+      return `<div class="empty"><div class="glyph"><i class="ti ti-map-pin-off"></i></div><p>还没有分类</p><p>点下面的按钮建一个吧</p></div><div class="cat-grid" id="catGrid"><button type="button" class="cat-tile add-tile" onclick="createCategoryFlow()"><i class="ti ti-plus"></i>新分类</button></div>`;
+    }
+    categories.sort((a,b)=>(a.order??0)-(b.order??0));
+    let html = `<div class="cat-grid" id="catGrid">`;
+    categories.forEach((cat, idx)=>{
+      const c = CAT_COLORS[cat.colorIndex % CAT_COLORS.length];
+      const count = places.filter(p=>p.cat===cat.name).length;
+      html += `<button type="button" class="cat-tile ${reorderMode?'jiggle':''}" data-cat-id="${cat.id}" style="${reorderMode?('animation-delay:'+((idx%2)*0.13)+'s'):''}">
+        ${reorderMode?'<span class="drag-handle"><i class="ti ti-grip-vertical"></i></span>':''}
+        <div class="avatar" style="background:${c.bg};color:${c.fg}">${escapeHtml(cat.name.slice(0,1))}</div>
+        <div>
+          <p class="cname">${escapeHtml(cat.name)}</p>
+          <p class="ccount">${count} 条记录</p>
+        </div>
+      </button>`;
+    });
+    if(!reorderMode){
+      html += `<button type="button" class="cat-tile add-tile" onclick="createCategoryFlow()"><i class="ti ti-plus"></i>新分类</button>`;
+    }
+    html += `</div>`;
+    return html;
+  }
+
+  return `<div class="search-wrap"><input type="text" id="search" placeholder="搜索名称或地址"></div><div id="listResults">${renderListResults('')}</div>`;
+}
+
+function renderListResults(query){
+  query = (query || '').trim().toLowerCase();
+  const filtered = places.filter(p=>{
+    if(!query) return true;
+    return (p.name && p.name.toLowerCase().includes(query)) || (p.addr && p.addr.toLowerCase().includes(query));
+  });
+  if(filtered.length === 0){
+    return `<div class="empty"><div class="glyph"><i class="ti ti-search-off"></i></div><p>${places.length===0?'还没有记录任何地点':'没有找到匹配的地点'}</p></div>`;
+  }
+  let html = '';
+  categories.slice().sort((a,b)=>a.order-b.order).forEach(cat=>{
+    const items = filtered.filter(p=>p.cat===cat.name);
+    if(items.length===0) return;
+    html += `<div class="list-group"><div class="list-group-title">${escapeHtml(cat.name)}</div><div class="list-rows">${items.map(rowHTML).join('')}</div></div>`;
+  });
+  return html;
+}
+
+function renderRecent(){
+  const sorted = places.slice().sort((a,b)=>b.createdAt-a.createdAt).slice(0,20);
+  if(sorted.length===0){
+    return `<div class="empty"><div class="glyph"><i class="ti ti-clock"></i></div><p>还没有记录</p></div>`;
+  }
+  return `<div class="list-group"><div class="list-rows">${sorted.map(rowHTML).join('')}</div></div>`;
+}
+
+function renderMain(){
+  let content = '';
+  if(activeTab === 'home'){
+    content = `<div class="segmented">
+        <button class="${viewMode==='grid'?'active':''}" onclick="setViewMode('grid')">方块</button>
+        <button class="${viewMode==='list'?'active':''}" onclick="setViewMode('list')">列表</button>
+      </div>`
+      + (viewMode==='grid' && reorderMode ? `<div class="reorder-bar"><span>长按拖动方块调整顺序</span><button onclick="exitReorderMode()">完成</button></div>` : '')
+      + renderHome();
+  } else if(activeTab === 'recent'){
+    content = renderRecent();
+  }
+
+  appEl.innerHTML = `
+    <div class="shell">
+      <header>
+        <div class="titles">
+          <h1>常去地点</h1>
+          <p>超市、餐厅、还有那些老想不起来名字的地方</p>
+          <span class="cloud-badge ${CLOUD_MODE?'on':''}"><i class="ti ${CLOUD_MODE?'ti-cloud-check':'ti-device-mobile'}"></i>${CLOUD_MODE?('已同步 · '+ (authUser?authUser.email:'')):'仅本机存储'}</span>
+        </div>
+      </header>
+      <main id="main">${statCardsHTML()}${content}</main>
+    </div>
+    <div class="tabbar"><div class="tabbar-inner">
+      <button class="tab-btn ${activeTab==='home'?'active':''}" onclick="setTab('home')"><i class="ti ti-home"></i>首页</button>
+      <button class="tab-btn ${activeTab==='recent'?'active':''}" onclick="setTab('recent')"><i class="ti ti-clock"></i>最近</button>
+      <button class="tab-btn" id="tabSettingsBtn"><i class="ti ti-settings"></i>设置</button>
+    </div></div>
+    <button class="fab" id="fabAdd" aria-label="添加地点"><i class="ti ti-plus"></i></button>
+  `;
+
+  document.getElementById('fabAdd').addEventListener('click', ()=>openSheet(null));
+  document.getElementById('tabSettingsBtn').addEventListener('click', openSettings);
+  const searchEl = document.getElementById('search');
+  if(searchEl){
+    searchEl.addEventListener('input', ()=>{
+      const results = document.getElementById('listResults');
+      if(results) results.innerHTML = renderListResults(searchEl.value);
+    });
+  }
+  if(activeTab==='home' && viewMode==='grid'){
+    bindGridTileEvents();
+  }
+}
+
+window.setTab = function(tab){
+  if(reorderMode) exitReorderMode();
+  activeTab = tab; renderMain();
+};
+window.setViewMode = function(mode){
+  if(reorderMode) exitReorderMode();
+  viewMode = mode; localStorage.setItem('view-mode', mode); renderMain();
+};
+
+function renderAll(){
+  if(CLOUD_MODE && !authUser){
+    renderLogin();
+    return;
+  }
+  renderMain();
+  if(typeof settingsSheet !== 'undefined' && settingsSheet && settingsSheet.classList.contains('open')){
+    renderCatManageList();
+  }
+}
+
+/* ---------------- 添加/编辑地点弹窗 ---------------- */
+const sheet = document.getElementById('sheet');
+const backdrop = document.getElementById('backdrop');
+const catRow = document.getElementById('catRow');
+const newCatWrap = document.getElementById('newCatWrap');
+const fNewCat = document.getElementById('fNewCat');
+const fName = document.getElementById('fName');
+const fAddr = document.getElementById('fAddr');
+const fNote = document.getElementById('fNote');
+const sheetTitle = document.getElementById('sheetTitle');
+
+function renderCatRow(){
+  if(lockedCatName){
+    const cat = categories.find(c=>c.name===lockedCatName);
+    const col = cat ? CAT_COLORS[cat.colorIndex % CAT_COLORS.length] : CAT_COLORS[0];
+    catRow.innerHTML = `<span class="cat-chip active" style="pointer-events:none;"><span class="cdot" style="background:${col.fg}"></span>${escapeHtml(lockedCatName)}</span>`;
+    newCatWrap.classList.remove('show');
+    selectedCatName = lockedCatName;
+    return;
+  }
+  let html = '';
+  categories.slice().sort((a,b)=>a.order-b.order).forEach(c=>{
+    const col = CAT_COLORS[c.colorIndex % CAT_COLORS.length];
+    html += `<button type="button" class="cat-chip ${c.name===selectedCatName?'active':''}" data-cat="${escapeAttr(c.name)}"><span class="cdot" style="background:${col.fg}"></span>${escapeHtml(c.name)}</button>`;
+  });
+  html += `<button type="button" class="cat-chip add-new" id="addCatBtn"><i class="ti ti-plus" style="font-size:12px"></i>新分类</button>`;
+  catRow.innerHTML = html;
+  catRow.querySelectorAll('.cat-chip[data-cat]').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      selectedCatName = btn.getAttribute('data-cat');
+      newCatWrap.classList.remove('show');
+      renderCatRow();
+    });
+  });
+  document.getElementById('addCatBtn').addEventListener('click', ()=>{
+    newCatWrap.classList.add('show'); fNewCat.focus();
+  });
+}
+
+function openSheet(place, presetCat){
+  editingId = place ? place.id : null;
+  lockedCatName = (!place && presetCat) ? presetCat : null;
+  sheetTitle.textContent = place ? '编辑地点' : '添加地点';
+  fName.value = place ? place.name : '';
+  fAddr.value = place ? place.addr : '';
+  fNote.value = place ? (place.note || '') : '';
+  selectedCatName = lockedCatName || (place ? place.cat : (categories[0] ? categories[0].name : null));
+  fNewCat.value = '';
+  newCatWrap.classList.remove('show');
+  renderCatRow();
+  backdrop.classList.add('open'); sheet.classList.add('open');
+  setTimeout(()=>fName.focus(), 200);
+}
+function closeSheet(){ backdrop.classList.remove('open'); sheet.classList.remove('open'); }
+document.getElementById('btnCancel').addEventListener('click', closeSheet);
+backdrop.addEventListener('click', closeSheet);
+
+document.getElementById('btnSave').addEventListener('click', ()=>{
+  const name = fName.value.trim();
+  if(!name){ fName.focus(); return; }
+  let catName = selectedCatName;
+  if(!lockedCatName && newCatWrap.classList.contains('show') && fNewCat.value.trim()){
+    const newCat = addCategory(fNewCat.value.trim());
+    catName = newCat.name;
+  }
+  if(!catName){ alert('请选择或新建一个分类'); return; }
+  const addr = fAddr.value.trim();
+  const note = fNote.value.trim();
+  if(editingId){
+    updatePlace(editingId, {name, cat:catName, addr, note});
+  } else {
+    addPlace({name, cat:catName, addr, note});
+  }
+  closeSheet();
+  if(catSheet.classList.contains('open') && catSheetName){
+    setTimeout(()=>openCatSheet(catSheetName), 60);
+  }
+});
+
+window.editPlace = function(pid){
+  const p = places.find(p=>p.id===pid);
+  if(p) openSheet(p);
+};
+
+/* ---------------- 分类详情弹窗 ---------------- */
+const catSheet = document.getElementById('catSheet');
+const catBackdrop = document.getElementById('catBackdrop');
+window.openCatSheet = function(catName){
+  catSheetName = catName;
+  document.getElementById('catSheetTitle').textContent = catName;
+  const items = places.filter(p=>p.cat===catName);
+  const listEl = document.getElementById('catSheetList');
+  listEl.innerHTML = items.length
+    ? `<div class="list-rows">${items.map(rowHTML).join('')}</div>`
+    : `<div class="empty" style="padding:30px 10px;"><p>这个分类还没有地点</p></div>`;
+  catBackdrop.classList.add('open'); catSheet.classList.add('open');
+};
+function closeCatSheet(){ catBackdrop.classList.remove('open'); catSheet.classList.remove('open'); }
+document.getElementById('btnCatClose').addEventListener('click', closeCatSheet);
+catBackdrop.addEventListener('click', closeCatSheet);
+document.getElementById('btnAddToCat').addEventListener('click', ()=>{
+  const presetCat = catSheetName;
+  closeCatSheet();
+  openSheet(null, presetCat);
+});
+document.getElementById('btnDeleteCat').addEventListener('click', ()=>{
+  const cat = categories.find(c=>c.name===catSheetName);
+  if(cat){ deleteCategory(cat.id); closeCatSheet(); }
+});
+
+/* ---------------- 设置弹窗 ---------------- */
+const settingsSheet = document.getElementById('settingsSheet');
+const settingsBackdrop = document.getElementById('settingsBackdrop');
+const navChoice = document.getElementById('navChoice');
+
+function renderNavChoice(){
+  const pref = getNavPref();
+  navChoice.querySelectorAll('label').forEach(label=>{
+    const app = label.getAttribute('data-app');
+    const radio = label.querySelector('input');
+    radio.checked = (app === pref);
+    label.classList.toggle('checked', app === pref);
+  });
+}
+navChoice.querySelectorAll('input[name="navapp"]').forEach(radio=>{
+  radio.addEventListener('change', ()=>{ setNavPref(radio.value); renderNavChoice(); });
+});
+
+function renderAccountBlock(){
+  const el = document.getElementById('accountContent');
+  if(!CLOUD_MODE){
+    el.innerHTML = `<p style="font-size:12.5px;color:var(--text-soft);line-height:1.6;margin:0;">当前是仅本机存储模式，换手机数据不会跟过去。想跨设备同步，需要配置 InstantDB App ID（免费），具体步骤问问帮你搭这个 App 的对话。</p>`;
+    return;
+  }
+  el.innerHTML = `<div class="account-row">
+    <div><div class="email">${authUser ? escapeHtml(authUser.email) : ''}</div><div class="sub">数据已同步到云端</div></div>
+    <button class="link-btn" id="btnSignOut">退出登录</button>
+  </div>`;
+  const so = document.getElementById('btnSignOut');
+  if(so) so.addEventListener('click', ()=> db.auth.signOut());
+}
+
+function renderCatManageList(){
+  const el = document.getElementById('catManageList');
+  if(!el) return;
+  const sorted = categories.slice().sort((a,b)=>a.order-b.order);
+  el.innerHTML = sorted.length ? sorted.map(c=>{
+    const col = CAT_COLORS[c.colorIndex % CAT_COLORS.length];
+    return `<div class="cat-manage-row">
+      <span class="cdot" style="background:${col.fg}"></span>
+      <span class="cat-manage-name">${escapeHtml(c.name)}</span>
+      <button onclick="renameCategory('${c.id}')" aria-label="重命名"><i class="ti ti-pencil"></i></button>
+      <button onclick="removeCategoryFromSettings('${c.id}')" aria-label="删除"><i class="ti ti-trash"></i></button>
+    </div>`;
+  }).join('') : `<p style="font-size:12.5px;color:var(--text-soft);">还没有分类，点下面新建一个</p>`;
+}
+
+function renameCategory(catId){
+  const cat = categories.find(c=>c.id===catId);
+  if(!cat) return;
+  const input = prompt('重命名分类', cat.name);
+  if(input === null) return;
+  const trimmed = input.trim();
+  if(!trimmed || trimmed === cat.name) return;
+  const dup = categories.find(c=>c.id!==catId && c.name.toLowerCase()===trimmed.toLowerCase());
+  if(dup){ alert('已经有同名分类了'); return; }
+  const oldName = cat.name;
+  const affected = places.filter(p=>p.cat===oldName);
+  if(CLOUD_MODE){
+    const txs = [db.tx.categories[catId].update({name:trimmed})];
+    affected.forEach(p=> txs.push(db.tx.places[p.id].update({cat:trimmed})));
+    db.transact(txs);
+  } else {
+    cat.name = trimmed;
+    affected.forEach(p=> p.cat = trimmed);
+    saveLocal();
+    renderAll();
+  }
+  setTimeout(renderCatManageList, 60);
+}
+window.renameCategory = renameCategory;
+
+function removeCategoryFromSettings(catId){
+  deleteCategory(catId);
+  setTimeout(renderCatManageList, 60);
+}
+window.removeCategoryFromSettings = removeCategoryFromSettings;
+
+function addCategoryFromSettings(){
+  const input = prompt('新分类名称');
+  if(input === null) return;
+  const trimmed = input.trim();
+  if(!trimmed) return;
+  addCategory(trimmed);
+  setTimeout(renderCatManageList, 60);
+}
+document.getElementById('btnAddCatSettings').addEventListener('click', addCategoryFromSettings);
+
+function openSettings(){
+  renderNavChoice();
+  renderAccountBlock();
+  renderCatManageList();
+  settingsBackdrop.classList.add('open'); settingsSheet.classList.add('open');
+}
+function closeSettings(){ settingsBackdrop.classList.remove('open'); settingsSheet.classList.remove('open'); }
+settingsBackdrop.addEventListener('click', closeSettings);
+document.getElementById('btnSettingsClose').addEventListener('click', closeSettings);
+
+/* ---------------- 登录页（仅云同步模式） ---------------- */
+function renderLogin(){
+  if(!sentEmail){
+    appEl.innerHTML = `
+      <div class="login-wrap">
+        <h2>登录同步账户</h2>
+        <p>输入邮箱，我们会发一个验证码过去，用同一个邮箱登录就能在所有设备上看到同样的数据。</p>
+        <form id="emailForm">
+          <div class="field"><input type="email" id="emailInput" placeholder="你的邮箱" required autofocus></div>
+          <button type="submit">发送验证码</button>
+        </form>
+        <p class="login-hint">不想用云同步？直接把文件里的 INSTANT_APP_ID 改回占位符即可切回仅本机模式。</p>
+      </div>`;
+    document.getElementById('emailForm').addEventListener('submit', (e)=>{
+      e.preventDefault();
+      const email = document.getElementById('emailInput').value.trim();
+      sentEmail = email;
+      renderLogin();
+      db.auth.sendMagicCode({email}).catch(err=>{
+        alert('发送失败：' + (err.body?.message || '请稍后重试'));
+        sentEmail = ''; renderLogin();
+      });
+    });
+  } else {
+    appEl.innerHTML = `
+      <div class="login-wrap">
+        <h2>输入验证码</h2>
+        <p>验证码已经发到 <strong>${escapeHtml(sentEmail)}</strong>，查收邮件后粘贴过来。</p>
+        <form id="codeForm">
+          <div class="field"><input type="text" id="codeInput" placeholder="123456" required autofocus></div>
+          <button type="submit">验证并登录</button>
+        </form>
+      </div>`;
+    document.getElementById('codeForm').addEventListener('submit', (e)=>{
+      e.preventDefault();
+      const code = document.getElementById('codeInput').value.trim();
+      db.auth.signInWithMagicCode({email: sentEmail, code}).catch(err=>{
+        alert('验证失败：' + (err.body?.message || '验证码不对，再试试'));
+      });
+    });
+  }
+}
+
+/* ---------------- 启动 ---------------- */
+if(CLOUD_MODE){
+  db = init({ appId: INSTANT_APP_ID });
+  db.subscribeAuth((auth)=>{
+    authUser = auth.user || null;
+    sentEmail = '';
+    if(authUser){
+      db.subscribeQuery({ places:{}, categories:{} }, (resp)=>{
+        if(resp.error){ console.error(resp.error); return; }
+        if(resp.data){
+          places = resp.data.places || [];
+          categories = resp.data.categories || [];
+          seedDefaultsIfEmpty();
+          renderAll();
+        }
+      });
+    } else {
+      places = []; categories = [];
+      renderAll();
+    }
+  });
+} else {
+  const local = loadLocal();
+  if(local){ places = local.places || []; categories = local.categories || []; }
+  seedDefaultsIfEmpty();
+  renderAll();
+}
+</script>
+</body>
+</html>
