@@ -79,7 +79,7 @@
   }
   .segmented .indicator{
     position:absolute;top:3px;bottom:3px;left:3px;width:calc(50% - 3px);
-    background:var(--surface-2);border-radius:8px;transition:transform .28s var(--ease);
+    background:var(--surface-2);border-radius:8px;transition:transform .28s var(--ease-soft);
   }
   .segmented button{
     position:relative;z-index:1;flex:1;border:none;background:transparent;color:var(--text-soft);
@@ -88,7 +88,7 @@
   .segmented button.active{color:var(--text);}
 
   .pager-viewport{overflow:hidden;width:100%;}
-  .pager-track{display:flex;width:200%;transition:transform .3s var(--ease);}
+  .pager-track{display:flex;width:200%;transition:transform .3s var(--ease-soft);}
   .pager-track.dragging{transition:none;}
   .pager-page{width:50%;flex-shrink:0;min-width:0;}
   .pager-page:first-child{padding-right:4px;}
@@ -97,10 +97,10 @@
   .cat-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
   .cat-tile{
     background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:14px;text-align:left;
-    display:flex;flex-direction:column;gap:10px;touch-action:none;-webkit-user-select:none;user-select:none;position:relative;
+    display:flex;flex-direction:column;gap:10px;touch-action:pan-y;-webkit-user-select:none;user-select:none;position:relative;
   }
   .cat-tile:active{background:var(--surface-2);}
-  .cat-tile.jiggle{animation:tileJiggle 0.26s ease-in-out infinite;}
+  .cat-tile.jiggle{animation:tileJiggle 0.26s ease-in-out infinite;touch-action:none;}
   @keyframes tileJiggle{0%{transform:rotate(-1deg);}50%{transform:rotate(1deg);}100%{transform:rotate(-1deg);}}
   .cat-tile.tile-dragging{animation:none;opacity:0.96;box-shadow:0 14px 32px rgba(0,0,0,0.45);transform:scale(1.04);}
   .drag-handle{position:absolute;top:8px;right:8px;color:var(--text-faint);font-size:14px;}
@@ -152,33 +152,40 @@
   }
   .tabbar-inner{display:flex;max-width:480px;width:100%;}
   .tab-btn{flex:1;border:none;background:transparent;color:var(--text-faint);display:flex;flex-direction:column;align-items:center;gap:3px;font-size:10.5px;padding:2px 0;transition:color .15s ease;}
-  .tab-btn i{font-size:21px;transition:transform .18s var(--ease);}
+  .tab-btn i{font-size:21px;transition:transform .18s var(--ease-soft);}
   .tab-btn.active{color:var(--teal);}
   .tab-btn.active i{transform:translateY(-1px) scale(1.08);}
 
   .fab{
     position:fixed;right:18px;bottom:calc(78px + env(safe-area-inset-bottom));width:54px;height:54px;border-radius:50%;
     background:var(--teal);color:#06231B;border:none;font-size:24px;display:flex;align-items:center;justify-content:center;
-    box-shadow:0 8px 20px rgba(53,201,165,0.35);z-index:14;transition:transform .18s var(--ease), box-shadow .18s ease;
+    box-shadow:0 8px 20px rgba(53,201,165,0.35);z-index:14;transition:transform .15s var(--ease-soft), box-shadow .18s ease;
   }
-  .fab:active{transform:scale(0.9);background:var(--teal-deep);}
+  .fab:active{transform:scale(0.94);background:var(--teal-deep);}
+
+  .fab-left{
+    position:fixed;left:18px;bottom:calc(78px + env(safe-area-inset-bottom));width:46px;height:46px;border-radius:50%;
+    background:var(--surface);color:var(--teal);border:1px solid var(--border-strong);font-size:19px;
+    display:flex;align-items:center;justify-content:center;z-index:14;transition:transform .15s var(--ease-soft), background .15s ease;
+  }
+  .fab-left:active{transform:scale(0.92);background:var(--surface-2);}
 
   .sheet-backdrop{position:fixed;inset:0;background:rgba(0,0,0,0.55);display:none;z-index:20;opacity:0;transition:opacity .2s ease;}
   .sheet-backdrop.open{display:block;opacity:1;}
   .sheet{
     position:fixed;left:0;right:0;bottom:0;background:var(--bg);border-top:1px solid var(--border-strong);
     border-radius:18px 18px 0 0;padding:16px 18px calc(22px + env(safe-area-inset-bottom));
-    transform:translateY(100%);transition:transform .3s var(--ease);z-index:21;max-height:86vh;overflow-y:auto;
+    transform:translateY(100%);transition:transform .26s var(--ease-soft);z-index:21;max-height:86vh;overflow-y:auto;overscroll-behavior:contain;
   }
   .sheet.open{transform:translateY(0);}
   .sheet-handle{width:36px;height:4px;border-radius:2px;background:var(--border-strong);margin:0 auto 14px;}
   .sheet h3{margin:0 0 14px;font-size:16.5px;font-weight:600;}
 
   .modal-center{
-    position:fixed;left:50%;top:50%;transform:translate(-50%,-50%) scale(0.92);opacity:0;pointer-events:none;
+    position:fixed;left:50%;top:50%;transform:translate(-50%,-50%) scale(0.96);opacity:0;pointer-events:none;
     background:var(--bg);border:1px solid var(--border-strong);border-radius:18px;
-    padding:18px 18px calc(18px + env(safe-area-inset-bottom));width:calc(100% - 48px);max-width:400px;max-height:78vh;overflow-y:auto;
-    transition:transform .22s var(--ease), opacity .18s ease;z-index:22;
+    padding:18px 18px calc(18px + env(safe-area-inset-bottom));width:calc(100% - 48px);max-width:400px;max-height:78vh;overflow-y:auto;overscroll-behavior:contain;
+    transition:transform .2s var(--ease-soft), opacity .18s ease;z-index:22;
   }
   .modal-center.open{transform:translate(-50%,-50%) scale(1);opacity:1;pointer-events:auto;}
   .modal-center h3{margin:0 0 14px;font-size:16.5px;font-weight:600;}
@@ -297,16 +304,6 @@
     <button class="cat-add-btn" id="btnAddCatSettings">+ 新建分类</button>
   </div>
 
-  <div class="settings-block">
-    <h4>跳转地图</h4>
-    <div class="chip-row" id="appChoice"></div>
-  </div>
-
-  <div class="settings-block">
-    <h4>出行方式</h4>
-    <div class="chip-row" id="modeChoice"></div>
-  </div>
-
   <div class="sheet-actions">
     <button class="btn-cancel" id="btnSettingsClose">完成</button>
   </div>
@@ -330,11 +327,8 @@ const CAT_COLORS = [
 ];
 const DEFAULT_CATS = ['超市','餐厅','其他'];
 const LOCAL_KEY = 'places-book-v3';
-const NAV_APP_KEY = 'nav-app-pref';
-const NAV_MODE_KEY = 'nav-mode-pref';
 const APP_NAMES = {apple:'苹果地图', google:'谷歌地图', amap:'高德地图'};
-const MODE_NAMES = {drive:'开车', walk:'步行', transit:'公共交通'};
-const MODE_ICONS = {drive:'ti-car', walk:'ti-walk', transit:'ti-bus'};
+const APP_ICONS = {apple:'ti-map-2', google:'ti-brand-google', amap:'ti-map-2'};
 
 let places = [];
 let categories = [];
@@ -356,6 +350,31 @@ let quickConfirmHandler = null;
 function uid(){ return CLOUD_MODE ? id() : (Date.now().toString(36) + Math.random().toString(36).slice(2,7)); }
 function escapeHtml(s){ return (s||'').replace(/[&<>"']/g, m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
 function escapeAttr(s){ return (s||'').replace(/\\/g,'\\\\').replace(/'/g,"\\'").replace(/"/g,'&quot;'); }
+
+let scrollLockCount = 0;
+let savedScrollY = 0;
+function lockScroll(){
+  scrollLockCount++;
+  if(scrollLockCount === 1){
+    savedScrollY = window.scrollY;
+    document.body.style.position = 'fixed';
+    document.body.style.top = (-savedScrollY) + 'px';
+    document.body.style.left = '0';
+    document.body.style.right = '0';
+    document.body.style.width = '100%';
+  }
+}
+function unlockScroll(){
+  scrollLockCount = Math.max(0, scrollLockCount-1);
+  if(scrollLockCount === 0){
+    document.body.style.position = '';
+    document.body.style.top = '';
+    document.body.style.left = '';
+    document.body.style.right = '';
+    document.body.style.width = '';
+    window.scrollTo(0, savedScrollY);
+  }
+}
 
 /* ================= 数据层 ================= */
 function loadLocal(){
@@ -433,40 +452,41 @@ function deletePlace(pid){
 window.deletePlace = deletePlace;
 
 /* ================= 导航跳转 ================= */
-function getNavApp(){ return localStorage.getItem(NAV_APP_KEY) || 'apple'; }
-function setNavApp(v){ localStorage.setItem(NAV_APP_KEY, v); }
-function getNavMode(){ return localStorage.getItem(NAV_MODE_KEY) || 'drive'; }
-function setNavMode(v){ localStorage.setItem(NAV_MODE_KEY, v); }
-
 function navLabel(place){
-  const app = (place && place.navApp) || getNavApp();
-  const mode = getNavMode();
-  if(app === 'amap'){
-    return { text: APP_NAMES.amap + ' · 搜索地址', icon: 'ti-map-2' };
-  }
-  return { text: APP_NAMES[app] + ' · ' + MODE_NAMES[mode], icon: MODE_ICONS[mode] };
+  const app = (place && place.navApp) || 'apple';
+  return { text: APP_NAMES[app], icon: APP_ICONS[app] };
 }
 
-function buildNavUrl(app, mode, address){
+function openMapApp(app, address){
   const encoded = encodeURIComponent(address);
   if(app === 'google'){
-    const tmode = {drive:'driving', walk:'walking', transit:'transit'}[mode];
-    return 'https://www.google.com/maps/dir/?api=1&destination=' + encoded + '&travelmode=' + tmode;
+    window.location.href = 'https://www.google.com/maps/dir/?api=1&destination=' + encoded + '&travelmode=driving';
+    return;
   }
   if(app === 'amap'){
-    return 'https://uri.amap.com/search?keyword=' + encoded + '&src=memorylossapp';
+    const scheme = 'iosamap://viewMap?sourceApplication=memorylossapp&poiname=' + encoded + '&dev=0';
+    const fallback = 'https://uri.amap.com/search?keyword=' + encoded + '&src=memorylossapp';
+    let fellBack = false;
+    const fallbackTimer = setTimeout(()=>{
+      fellBack = true;
+      window.location.href = fallback;
+    }, 1200);
+    const onHide = ()=>{
+      if(document.hidden){ clearTimeout(fallbackTimer); document.removeEventListener('visibilitychange', onHide); }
+    };
+    document.addEventListener('visibilitychange', onHide);
+    window.location.href = scheme;
+    return;
   }
-  const dirflg = {drive:'d', walk:'w', transit:'r'}[mode];
-  return 'https://maps.apple.com/?daddr=' + encoded + '&dirflg=' + dirflg;
+  window.location.href = 'https://maps.apple.com/?daddr=' + encoded + '&dirflg=d';
 }
 
 window.openNav = function(placeId){
   const p = places.find(x=>x.id===placeId);
   if(!p) return;
-  const app = p.navApp || getNavApp();
-  const mode = getNavMode();
+  const app = p.navApp || 'apple';
   const address = p.addr || p.name;
-  window.open(buildNavUrl(app, mode, address), '_blank');
+  openMapApp(app, address);
 };
 
 /* ================= 快捷输入弹窗（新建/重命名分类） ================= */
@@ -480,9 +500,10 @@ function showQuickInput(title, initial, onConfirm){
   quickInput.value = initial || '';
   quickConfirmHandler = onConfirm;
   quickBackdrop.classList.add('open'); quickModal.classList.add('open');
+  lockScroll();
   setTimeout(()=>quickInput.focus(), 200);
 }
-function closeQuickInput(){ quickBackdrop.classList.remove('open'); quickModal.classList.remove('open'); quickConfirmHandler = null; }
+function closeQuickInput(){ quickBackdrop.classList.remove('open'); quickModal.classList.remove('open'); quickConfirmHandler = null; unlockScroll(); }
 document.getElementById('btnQuickCancel').addEventListener('click', closeQuickInput);
 quickBackdrop.addEventListener('click', closeQuickInput);
 document.getElementById('btnQuickConfirm').addEventListener('click', ()=>{
@@ -555,7 +576,7 @@ function sortedPlacesInCat(catName){
 /* ---- 方块页 ---- */
 function gridPageHTML(){
   if(categories.length === 0 && !reorderMode){
-    return `<div class="empty"><div class="glyph"><i class="ti ti-map-pin-off"></i></div><p>还没有分类</p><p>点下面的按钮建一个吧</p></div><div class="cat-grid" id="catGrid"><button type="button" class="cat-tile add-tile" onclick="createCategoryFlow()"><i class="ti ti-plus"></i>新分类</button></div>`;
+    return `<div class="empty"><div class="glyph"><i class="ti ti-map-pin-off"></i></div><p>还没有分类</p><p>点左下角的按钮建一个吧</p></div>`;
   }
   categories.sort((a,b)=>(a.order??0)-(b.order??0));
   let html = `<div class="cat-grid" id="catGrid">`;
@@ -568,9 +589,6 @@ function gridPageHTML(){
       <div><p class="cname">${escapeHtml(cat.name)}</p><p class="ccount">${count} 条记录</p></div>
     </button>`;
   });
-  if(!reorderMode){
-    html += `<button type="button" class="cat-tile add-tile" onclick="createCategoryFlow()"><i class="ti ti-plus"></i>新分类</button>`;
-  }
   html += `</div>`;
   return html;
 }
@@ -662,11 +680,14 @@ function renderMain(){
       <button class="tab-btn ${activeTab==='recent'?'active':''}" onclick="setTab('recent')"><i class="ti ti-clock"></i>最近</button>
       <button class="tab-btn" id="tabSettingsBtn"><i class="ti ti-settings"></i>设置</button>
     </div></div>
+    ${activeTab==='home' ? `<button class="fab-left" id="fabAddCat" aria-label="新建分类"><i class="ti ti-folder-plus"></i></button>` : ''}
     <button class="fab" id="fabAdd" aria-label="添加地点"><i class="ti ti-plus"></i></button>
   `;
 
   document.getElementById('fabAdd').addEventListener('click', ()=>openSheet(null));
   document.getElementById('tabSettingsBtn').addEventListener('click', openSettings);
+  const fabAddCat = document.getElementById('fabAddCat');
+  if(fabAddCat) fabAddCat.addEventListener('click', createCategoryFlow);
 
   if(activeTab === 'home'){
     const searchEl = document.getElementById('search');
@@ -715,6 +736,7 @@ function onTilePointerDown(e){
   const startX = e.clientX, startY = e.clientY;
   const startTime = Date.now();
   let moved = false, dragging = false, longPressTimer = null;
+  try{ tile.setPointerCapture(e.pointerId); }catch(err){}
 
   function onMove(ev){
     const dx = ev.clientX-startX, dy = ev.clientY-startY;
@@ -724,6 +746,7 @@ function onTilePointerDown(e){
   function onUp(){
     document.removeEventListener('pointermove', onMove);
     document.removeEventListener('pointerup', onUp);
+    document.removeEventListener('pointercancel', onUp);
     clearTimeout(longPressTimer);
     if(dragging){ endDragTile(); return; }
     if(!moved && Date.now()-startTime < 500 && !reorderMode){
@@ -733,6 +756,7 @@ function onTilePointerDown(e){
   }
   document.addEventListener('pointermove', onMove, {passive:false});
   document.addEventListener('pointerup', onUp);
+  document.addEventListener('pointercancel', onUp);
 
   if(reorderMode){
     dragging = true;
@@ -745,7 +769,10 @@ function onTilePointerDown(e){
         body.innerHTML = homeBodyHTML();
         bindHomeBodyEvents();
         const freshTile = document.querySelector(`.cat-tile[data-cat-id="${catId}"]`);
-        if(freshTile){ dragging = true; startDragTile(freshTile, catId, startX, startY); }
+        if(freshTile){
+          try{ freshTile.setPointerCapture(e.pointerId); }catch(err){}
+          dragging = true; startDragTile(freshTile, catId, startX, startY);
+        }
       }
     }, 480);
   }
@@ -754,8 +781,9 @@ function startDragTile(tile, catId, startX, startY){
   dragCatId = catId; dragElRef = tile;
   const rect = tile.getBoundingClientRect();
   dragOffsetX = startX - rect.left; dragOffsetY = startY - rect.top;
+  document.body.appendChild(tile);
   tile.style.position = 'fixed'; tile.style.left = rect.left+'px'; tile.style.top = rect.top+'px';
-  tile.style.width = rect.width+'px'; tile.style.height = rect.height+'px'; tile.style.zIndex = '60';
+  tile.style.width = rect.width+'px'; tile.style.height = rect.height+'px'; tile.style.zIndex = '9999';
   tile.classList.add('tile-dragging');
   refreshDragSiblingCache();
   if(navigator.vibrate) navigator.vibrate(8);
@@ -790,14 +818,20 @@ function reflowGridOrder(){
   const grid = document.getElementById('catGrid');
   if(!grid) return;
   categories.forEach(cat=>{
+    if(cat.id === dragCatId) return;
     const el = grid.querySelector(`.cat-tile[data-cat-id="${cat.id}"]`);
     if(el) grid.appendChild(el);
   });
-  const addTile = grid.querySelector('.add-tile');
-  if(addTile) grid.appendChild(addTile);
 }
 function endDragTile(){
   if(!dragElRef) return;
+  const grid = document.getElementById('catGrid');
+  if(grid){
+    const idx = categories.findIndex(c=>c.id===dragCatId);
+    const nextCat = categories[idx+1];
+    const refEl = nextCat ? grid.querySelector(`.cat-tile[data-cat-id="${nextCat.id}"]`) : null;
+    grid.insertBefore(dragElRef, refEl || null);
+  }
   dragElRef.style.position=''; dragElRef.style.left=''; dragElRef.style.top='';
   dragElRef.style.width=''; dragElRef.style.height=''; dragElRef.style.zIndex='';
   dragElRef.classList.remove('tile-dragging');
@@ -829,8 +863,10 @@ function onRowHandlePointerDown(e){
   const startY = e.clientY;
   const rect = rowEl.getBoundingClientRect();
   const offsetY = startY - rect.top;
+  try{ handle.setPointerCapture(e.pointerId); }catch(err){}
+  document.body.appendChild(rowEl);
   rowEl.style.position = 'fixed'; rowEl.style.left = rect.left+'px'; rowEl.style.top = rect.top+'px';
-  rowEl.style.width = rect.width+'px'; rowEl.style.zIndex = '60';
+  rowEl.style.width = rect.width+'px'; rowEl.style.zIndex = '9999';
   rowEl.classList.add('row-dragging');
   let siblingCache = computeRowSiblingCache(container, placeId);
   if(navigator.vibrate) navigator.vibrate(8);
@@ -852,6 +888,7 @@ function onRowHandlePointerDown(e){
         group.splice(toIdx,0,moved);
         group.forEach((p,i)=>{ p.sortOrder = i; });
         group.forEach(p=>{
+          if(p.id === placeId) return;
           const el = container.querySelector(`.list-row[data-place-id="${p.id}"]`);
           if(el) container.appendChild(el);
         });
@@ -862,9 +899,17 @@ function onRowHandlePointerDown(e){
   function onUp(){
     document.removeEventListener('pointermove', onMove);
     document.removeEventListener('pointerup', onUp);
+    document.removeEventListener('pointercancel', onUp);
+    const place = places.find(p=>p.id===placeId);
+    if(place){
+      const group = sortedPlacesInCat(place.cat);
+      const idx = group.findIndex(p=>p.id===placeId);
+      const nextPlace = group[idx+1];
+      const refEl = nextPlace ? container.querySelector(`.list-row[data-place-id="${nextPlace.id}"]`) : null;
+      container.insertBefore(rowEl, refEl || null);
+    }
     rowEl.style.position=''; rowEl.style.left=''; rowEl.style.top=''; rowEl.style.width=''; rowEl.style.zIndex='';
     rowEl.classList.remove('row-dragging');
-    const place = places.find(p=>p.id===placeId);
     if(place){
       const group = sortedPlacesInCat(place.cat);
       if(CLOUD_MODE){
@@ -875,6 +920,7 @@ function onRowHandlePointerDown(e){
   }
   document.addEventListener('pointermove', onMove);
   document.addEventListener('pointerup', onUp);
+  document.addEventListener('pointercancel', onUp);
 }
 function computeRowSiblingCache(container, excludeId){
   return Array.from(container.querySelectorAll('.list-row[data-place-id]'))
@@ -970,17 +1016,16 @@ function renderCatRow(){
 
 function renderNavRow(){
   const opts = [
-    {key:null, label:'跟随设置'},
     {key:'apple', label:'苹果地图'},
     {key:'google', label:'谷歌地图'},
     {key:'amap', label:'高德地图'},
   ];
   navRow.innerHTML = opts.map(o=>
-    `<button type="button" class="chip ${selectedNavOverride===o.key?'active':''}" data-nav="${o.key||''}">${o.label}</button>`
+    `<button type="button" class="chip ${selectedNavOverride===o.key?'active':''}" data-nav="${o.key}">${o.label}</button>`
   ).join('');
   navRow.querySelectorAll('.chip[data-nav]').forEach(btn=>{
     btn.addEventListener('click', ()=>{
-      selectedNavOverride = btn.getAttribute('data-nav') || null;
+      selectedNavOverride = btn.getAttribute('data-nav');
       renderNavRow();
     });
   });
@@ -994,13 +1039,14 @@ function openSheet(place, presetCat){
   fAddr.value = place ? place.addr : '';
   fNote.value = place ? (place.note || '') : '';
   selectedCatName = lockedCatName || (place ? place.cat : (categories[0] ? categories[0].name : null));
-  selectedNavOverride = place ? (place.navApp || null) : null;
+  selectedNavOverride = (place && place.navApp) ? place.navApp : 'apple';
   renderCatRow();
   renderNavRow();
   backdrop.classList.add('open'); sheet.classList.add('open');
+  lockScroll();
   setTimeout(()=>fName.focus(), 200);
 }
-function closeSheet(){ backdrop.classList.remove('open'); sheet.classList.remove('open'); }
+function closeSheet(){ backdrop.classList.remove('open'); sheet.classList.remove('open'); unlockScroll(); }
 document.getElementById('btnCancel').addEventListener('click', closeSheet);
 backdrop.addEventListener('click', closeSheet);
 
@@ -1040,8 +1086,9 @@ window.openCatSheet = function(catName){
     ? `<div class="list-rows">${items.map(p=>rowHTML(p,{draggable:false})).join('')}</div>`
     : `<div class="empty" style="padding:30px 10px;"><p>这个分类还没有地点</p></div>`;
   catBackdrop.classList.add('open'); catSheet.classList.add('open');
+  lockScroll();
 };
-function closeCatSheet(){ catBackdrop.classList.remove('open'); catSheet.classList.remove('open'); }
+function closeCatSheet(){ catBackdrop.classList.remove('open'); catSheet.classList.remove('open'); unlockScroll(); }
 document.getElementById('btnCatClose').addEventListener('click', closeCatSheet);
 catBackdrop.addEventListener('click', closeCatSheet);
 document.getElementById('btnAddToCat').addEventListener('click', ()=>{
@@ -1057,27 +1104,6 @@ document.getElementById('btnDeleteCat').addEventListener('click', ()=>{
 /* ================= 设置弹窗 ================= */
 const settingsSheet = document.getElementById('settingsSheet');
 const settingsBackdrop = document.getElementById('settingsBackdrop');
-const appChoice = document.getElementById('appChoice');
-const modeChoice = document.getElementById('modeChoice');
-
-function renderAppChoice(){
-  const cur = getNavApp();
-  appChoice.innerHTML = ['apple','google','amap'].map(a=>
-    `<button type="button" class="chip ${a===cur?'active':''}" data-app="${a}">${APP_NAMES[a]}</button>`
-  ).join('');
-  appChoice.querySelectorAll('.chip[data-app]').forEach(btn=>{
-    btn.addEventListener('click', ()=>{ setNavApp(btn.getAttribute('data-app')); renderAppChoice(); renderAll(); });
-  });
-}
-function renderModeChoice(){
-  const cur = getNavMode();
-  modeChoice.innerHTML = ['drive','walk','transit'].map(m=>
-    `<button type="button" class="chip ${m===cur?'active':''}" data-mode="${m}"><i class="ti ${MODE_ICONS[m]}" style="font-size:13px;"></i>${MODE_NAMES[m]}</button>`
-  ).join('');
-  modeChoice.querySelectorAll('.chip[data-mode]').forEach(btn=>{
-    btn.addEventListener('click', ()=>{ setNavMode(btn.getAttribute('data-mode')); renderModeChoice(); renderAll(); });
-  });
-}
 
 function renderAccountBlock(){
   const el = document.getElementById('accountContent');
@@ -1145,11 +1171,10 @@ document.getElementById('btnAddCatSettings').addEventListener('click', createCat
 function openSettings(){
   renderAccountBlock();
   renderCatManageList();
-  renderAppChoice();
-  renderModeChoice();
   settingsBackdrop.classList.add('open'); settingsSheet.classList.add('open');
+  lockScroll();
 }
-function closeSettings(){ settingsBackdrop.classList.remove('open'); settingsSheet.classList.remove('open'); }
+function closeSettings(){ settingsBackdrop.classList.remove('open'); settingsSheet.classList.remove('open'); unlockScroll(); }
 settingsBackdrop.addEventListener('click', closeSettings);
 document.getElementById('btnSettingsClose').addEventListener('click', closeSettings);
 
