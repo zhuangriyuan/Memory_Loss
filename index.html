@@ -787,6 +787,7 @@ function renderAll(){
 
 /* ================= 方块拖拽排序（SortableJS） ================= */
 let gridSortable = null;
+let gridDragActive = false;
 function initGridSortable(){
   const grid = document.getElementById('catGrid');
   if(!grid || typeof Sortable === 'undefined') return;
@@ -798,12 +799,14 @@ function initGridSortable(){
     touchStartThreshold: 6,
     forceFallback: true,
     fallbackTolerance: 3,
+    fallbackOnBody: true,
     easing: 'cubic-bezier(.22,.9,.32,1)',
     ghostClass: 'tile-ghost',
     chosenClass: 'tile-chosen',
     dragClass: 'tile-drag-active',
-    onStart: function(){ if(navigator.vibrate) navigator.vibrate(8); },
+    onStart: function(){ gridDragActive = true; if(navigator.vibrate) navigator.vibrate(8); },
     onEnd: function(evt){
+      gridDragActive = false;
       if(evt.oldIndex === evt.newIndex) return;
       const sorted = categories.slice().sort((a,b)=>(a.order??0)-(b.order??0));
       const [moved] = sorted.splice(evt.oldIndex, 1);
@@ -909,10 +912,19 @@ function bindPagerSwipe(){
   const width = () => viewport.getBoundingClientRect().width;
 
   viewport.addEventListener('pointerdown', (e)=>{
+    if(gridDragActive) return;
     startX = e.clientX; startY = e.clientY; dx = 0; tracking = true; decided = false; isHorizontal = false;
   });
   viewport.addEventListener('pointermove', (e)=>{
     if(!tracking) return;
+    if(gridDragActive){
+      tracking = false;
+      if(decided && isHorizontal){
+        track.classList.remove('dragging');
+        track.style.transform = `translateX(${-viewIndex*50}%)`;
+      }
+      return;
+    }
     const mx = e.clientX-startX, my = e.clientY-startY;
     if(!decided){
       if(Math.abs(mx) > 8 || Math.abs(my) > 8){
