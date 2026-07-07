@@ -369,7 +369,7 @@ const INSTANT_APP_ID = "35bb7cc3-5ccf-4d3e-b2a9-31511cc34c75";
 /* 这里只是前端的友好提示：填错邮箱能立刻看到报错，不用等请求发出去才知道。
    真正拦住"别人拿App ID也能注册/消耗额度"的墙，是 InstantDB 后台 Permissions 里
    $users 的 create 规则（后端强制执行，绕不过去）——具体配置见 README。 */
-const ALLOWED_EMAILS = ["zhuangriyuan@gmail.com"];
+const ALLOWED_EMAILS = ["__YOUR_EMAIL__"];
 const CLOUD_MODE = INSTANT_APP_ID && INSTANT_APP_ID !== "__APP_ID__" && INSTANT_APP_ID.length > 8;
 
 const CAT_COLORS = [
@@ -522,13 +522,13 @@ function batchDeletePlaces(ids){
 
 /* ================= 导航跳转 ================= */
 function navLabel(place){
-  let app = (place && place.navApp) || 'apple';
-  if(app !== 'apple' && app !== 'google') app = 'apple';
+  let app = (place && place.navApp) || 'google';
+  if(app !== 'apple' && app !== 'google') app = 'google';
   return { text: APP_NAMES[app], icon: APP_ICONS[app] };
 }
 
 function openMapApp(app, address){
-  if(app !== 'apple' && app !== 'google') app = 'apple';
+  if(app !== 'apple' && app !== 'google') app = 'google';
   const encoded = encodeURIComponent(address);
   if(app === 'google'){
     window.location.href = 'https://www.google.com/maps/dir/?api=1&destination=' + encoded + '&travelmode=driving';
@@ -540,7 +540,7 @@ function openMapApp(app, address){
 window.openNav = function(placeId){
   const p = places.find(x=>x.id===placeId);
   if(!p) return;
-  const app = p.navApp || 'apple';
+  const app = p.navApp || 'google';
   const address = p.addr || p.name;
   openMapApp(app, address);
 };
@@ -1010,8 +1010,8 @@ function renderCatRow(){
 
 function renderNavRow(){
   const opts = [
-    {key:'apple', label:'苹果地图'},
     {key:'google', label:'谷歌地图'},
+    {key:'apple', label:'苹果地图'},
   ];
   navRow.innerHTML = opts.map(o=>
     `<button type="button" class="chip ${selectedNavOverride===o.key?'active':''}" data-nav="${o.key}">${o.label}</button>`
@@ -1032,7 +1032,7 @@ function openSheet(place, presetCat){
   fAddr.value = place ? place.addr : '';
   fNote.value = place ? (place.note || '') : '';
   selectedCatName = lockedCatName || (place ? place.cat : (categories[0] ? categories[0].name : null));
-  selectedNavOverride = (place && place.navApp) ? place.navApp : 'apple';
+  selectedNavOverride = (place && place.navApp) ? place.navApp : 'google';
   renderCatRow();
   renderNavRow();
   backdrop.classList.add('open'); sheet.classList.add('open');
